@@ -1,27 +1,27 @@
- // --- CONFIGURAÇÃO (COLE SEU CÓDIGO DA IMAGEM AQUI) ---
+// --- CONFIGURAÇÃO DO FIREBASE (Já preenchida com os dados da sua Imagem 4) ---
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY", // Pegue da imagem Screenshot_4
-    authDomain: "controle...",
-    projectId: "controle...",
-    storageBucket: "...",
-    messagingSenderId: "...",
-    appId: "..."
+    apiKey: "AIzaSyDfPayKm4sLU2lNdaBuOQzxgPMBmFAd0qk",
+    authDomain: "controleviagens-ed5e9.firebaseapp.com",
+    projectId: "controleviagens-ed5e9",
+    storageBucket: "controleviagens-ed5e9.firebasestorage.app",
+    messagingSenderId: "949452854484",
+    appId: "1:949452854484:web:1609cb7d237c4985c41741"
 };
 
-// Inicializa
+// Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// --- CONTROLE DE LOGIN ---
+// --- SISTEMA DE LOGIN ---
 auth.onAuthStateChanged((user) => {
     if (user) {
-        // Usuário logado
+        // Se entrou, esconde login e mostra o app
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-screen').style.display = 'block';
-        carregarLista(); // Carrega dados ao entrar
+        carregarLista(); 
     } else {
-        // Usuário deslogado
+        // Se saiu, mostra login
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('app-screen').style.display = 'none';
     }
@@ -30,12 +30,10 @@ auth.onAuthStateChanged((user) => {
 function fazerLogin() {
     const email = document.getElementById('email-login').value;
     const senha = document.getElementById('senha-login').value;
-    const msg = document.getElementById('msg-erro');
-
+    
     auth.signInWithEmailAndPassword(email, senha)
         .catch((error) => {
-            msg.style.display = 'block';
-            msg.innerText = "Erro: " + error.message;
+            alert("Erro ao entrar: " + error.message);
         });
 }
 
@@ -43,20 +41,17 @@ function fazerLogout() {
     auth.signOut();
 }
 
-// --- CONTROLE DE ABAS ---
+// --- NAVEGAÇÃO POR ABAS ---
 function mostrarAba(idAba) {
     // Esconde todas as abas
-    document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
-    document.querySelectorAll('.btn-nav').forEach(el => el.classList.remove('active'));
-    
-    // Mostra a escolhida
+    document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('ativa'));
+    document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
+
+    // Mostra a aba clicada
     document.getElementById(idAba).classList.add('ativa');
-    
-    // Destaca o ícone (simples lógica para achar o botão certo, pode ser melhorada)
-    // Aqui apenas removemos o destaque visual anterior
 }
 
-// --- TEMA (DARK MODE) ---
+// --- TEMA ESCURO (DARK MODE) ---
 function alternarTema() {
     const checkbox = document.getElementById('check-tema');
     if (checkbox.checked) {
@@ -66,8 +61,7 @@ function alternarTema() {
     }
 }
 
-// --- FUNÇÕES DO SISTEMA (IGUAIS AS ANTERIORES, COM MELHORIAS) ---
-
+// --- FUNÇÕES DO SISTEMA ---
 async function salvarPassageiro() {
     const nome = document.getElementById('nome').value.toUpperCase();
     const cpf = document.getElementById('cpf').value;
@@ -83,10 +77,9 @@ async function salvarPassageiro() {
             nome, cpf, valor, data, evento, onibus,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert("Salvo com sucesso!");
-        // Limpar campos
-        document.getElementById('nome').value = "";
-        document.getElementById('valor').value = "";
+        alert("Passageiro salvo!");
+        document.getElementById('nome').value = ""; // Limpa campo
+        document.getElementById('valor').value = ""; // Limpa campo
         carregarLista();
     } catch (e) {
         alert("Erro ao salvar: " + e.message);
@@ -96,33 +89,27 @@ async function salvarPassageiro() {
 function carregarLista() {
     let totalDinheiro = 0;
     let count = 0;
-    const divRecentes = document.getElementById('listaRecentes');
-    const divRelatorio = document.getElementById('listaPassageiros');
+    const divRelatorio = document.getElementById('listaRelatorio');
     
-    divRecentes.innerHTML = ""; 
-    divRelatorio.innerHTML = "";
+    divRelatorio.innerHTML = "Carregando...";
 
     db.collection("viagens").orderBy("nome").get().then((snap) => {
+        divRelatorio.innerHTML = "";
         snap.forEach(doc => {
             const p = doc.data();
             totalDinheiro += p.valor;
             count++;
 
-            const htmlItem = `
-                <div class="item-lista" style="border-bottom: 1px solid #ccc; padding: 5px;">
-                    <strong>${p.nome}</strong> - R$ ${p.valor} <br>
-                    <small>${p.evento} (Ônibus ${p.onibus})</small>
+            divRelatorio.innerHTML += `
+                <div class="item-lista">
+                    <strong>${p.nome}</strong> <br>
+                    <small>Bus ${p.onibus} | ${p.evento}</small>
+                    <span style="float:right; color:green; font-weight:bold;">R$ ${p.valor.toFixed(2)}</span>
                 </div>
             `;
-            
-            // Adiciona a todos no relatório
-            divRelatorio.innerHTML += htmlItem;
-            
-            // Adiciona os 5 primeiros na Home como "Recentes" (simplificado)
-            if (count <= 5) divRecentes.innerHTML += htmlItem;
         });
 
         document.getElementById('totalCaixa').innerText = `R$ ${totalDinheiro.toFixed(2)}`;
         document.getElementById('totalPassageiros').innerText = count;
     });
-}
+} 

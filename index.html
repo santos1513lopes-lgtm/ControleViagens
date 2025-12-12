@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Viagens Pro</title>
+    <title>Controle de Viagens</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,36 +11,33 @@
 
     <div id="login-screen" class="login-container">
         <div class="card login-card">
-            <h2>🔐 Acesso Restrito</h2>
+            <h2>🚍 Acesso Restrito</h2>
             <input type="email" id="email-login" placeholder="E-mail">
             <input type="password" id="senha-login" placeholder="Senha">
-            <button onclick="fazerLogin()">Entrar</button>
-            <p id="msg-erro" style="color: red; display: none;"></p>
+            <button onclick="fazerLogin()">Entrar no Sistema</button>
         </div>
     </div>
 
     <div id="app-screen" style="display: none;">
         
         <nav class="navbar">
-            <span class="logo">🚍 GestãoBus</span>
-            <div class="menu-items">
+            <span class="logo">GestãoBus</span>
+            <div class="menu-icons">
                 <button onclick="mostrarAba('aba-home')" class="btn-nav active"><i class="material-icons">home</i></button>
                 <button onclick="mostrarAba('aba-cadastro')" class="btn-nav"><i class="material-icons">person_add</i></button>
-                <button onclick="mostrarAba('aba-relatorios')" class="btn-nav"><i class="material-icons">list_alt</i></button>
+                <button onclick="mostrarAba('aba-relatorio')" class="btn-nav"><i class="material-icons">list</i></button>
                 <button onclick="mostrarAba('aba-config')" class="btn-nav"><i class="material-icons">settings</i></button>
             </div>
         </nav>
 
-        <div class="container main-content">
+        <div class="container">
             
             <div id="aba-home" class="aba ativa">
                 <div class="card financeiro">
-                    <h3>💰 Visão Geral</h3>
-                    <p>Caixa: <strong id="totalCaixa">R$ 0.00</strong></p>
-                    <p>Passageiros: <strong id="totalPassageiros">0</strong></p>
+                    <h3>💰 Caixa Atual</h3>
+                    <h1><span id="totalCaixa">R$ 0.00</span></h1>
+                    <p>Total Passageiros: <strong id="totalPassageiros">0</strong></p>
                 </div>
-                <h3>Últimos Adicionados</h3>
-                <div id="listaRecentes"></div>
             </div>
 
             <div id="aba-cadastro" class="aba">
@@ -51,8 +48,8 @@
                     <input type="number" id="valor" placeholder="Valor (R$)">
                     <input type="date" id="data">
                     <select id="evento">
-                        <option value="Assembleia">Assembleia (1 dia)</option>
-                        <option value="Congresso">Congresso (3 dias)</option>
+                        <option value="Assembleia">Assembleia</option>
+                        <option value="Congresso">Congresso</option>
                     </select>
                     <select id="onibus">
                         <option value="1">Ônibus 01</option>
@@ -62,24 +59,21 @@
                 </div>
             </div>
 
-            <div id="aba-relatorios" class="aba">
-                <h3>Lista Completa (A-Z)</h3>
-                <button onclick="carregarLista()" class="btn-refresh">Atualizar</button>
-                <div id="listaPassageiros"></div>
+            <div id="aba-relatorio" class="aba">
+                <h3>Lista de Passageiros</h3>
+                <button onclick="carregarLista()" class="btn-refresh">Atualizar Lista</button>
+                <div id="listaRelatorio"></div>
             </div>
 
             <div id="aba-config" class="aba">
                 <div class="card">
-                    <h3>Preferências</h3>
-                    <div class="opcao-config">
+                    <h3>Configurações</h3>
+                    <div class="opcao-tema">
                         <span>Tema Escuro</span>
-                        <label class="switch">
-                            <input type="checkbox" id="check-tema" onchange="alternarTema()">
-                            <span class="slider round"></span>
-                        </label>
+                        <input type="checkbox" id="check-tema" onchange="alternarTema()">
                     </div>
-                    <hr>
-                    <button onclick="fazerLogout()" class="btn-logout">Sair do Sistema</button>
+                    <br>
+                    <button onclick="fazerLogout()" style="background: red;">Sair</button>
                 </div>
             </div>
 
@@ -89,7 +83,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    
     <script src="app.js"></script>
 </body>
 </html>

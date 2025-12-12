@@ -1,100 +1,31 @@
- /* VARIÁVEIS DE CORES (Para facilitar o tema escuro) */
-:root {
-    --bg-color: #f4f4f9;
-    --text-color: #333;
-    --card-bg: white;
-    --primary: #2196F3;
-    --navbar-bg: #1565C0;
-    --input-bg: #fff;
-    --border-color: #ccc;
+ :root {
+    --bg: #f4f4f9;
+    --card: #ffffff;
+    --text: #333333;
+    --nav: #2196F3;
 }
 
-/* TEMA ESCURO */
 [data-theme="dark"] {
-    --bg-color: #121212;
-    --text-color: #e0e0e0;
-    --card-bg: #1e1e1e;
-    --primary: #bb86fc;
-    --navbar-bg: #333;
-    --input-bg: #2d2d2d;
-    --border-color: #444;
+    --bg: #121212;
+    --card: #1e1e1e;
+    --text: #e0e0e0;
+    --nav: #333333;
 }
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding-bottom: 60px; /* Espaço para não cortar no mobile */
-    transition: 0.3s;
-}
+body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; transition: 0.3s; }
+.navbar { background: var(--nav); padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; }
+.btn-nav { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 1.2rem; }
+.btn-nav.active { color: white; transform: scale(1.2); }
 
-/* NAVBAR */
-.navbar {
-    background-color: var(--navbar-bg);
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-.btn-nav {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.6);
-    cursor: pointer;
-    font-size: 1.2rem;
-    margin-left: 10px;
-}
-.btn-nav.active { color: white; transform: scale(1.1); }
+.container { max-width: 600px; margin: 20px auto; padding: 10px; }
+.card { background: var(--card); padding: 20px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+.btn-save { background: #28a745; color: white; font-weight: bold; cursor: pointer; border: none; }
 
-/* LAYOUT */
-.container { max-width: 600px; margin: 20px auto; padding: 0 10px; }
-.card {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    margin-bottom: 15px;
-}
-
-/* LOGIN */
-.login-container {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--primary);
-}
-.login-card { width: 90%; max-width: 350px; text-align: center; }
-
-/* INPUTS E BOTOES */
-input, select {
-    width: 100%; padding: 12px; margin: 8px 0;
-    background: var(--input-bg); color: var(--text-color);
-    border: 1px solid var(--border-color); border-radius: 5px;
-    box-sizing: border-box;
-}
-button {
-    width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer;
-    font-weight: bold; color: white;
-}
-.btn-save { background-color: #28a745; }
-.btn-logout { background-color: #d32f2f; margin-top: 20px; }
-.btn-refresh { background-color: var(--primary); margin-bottom: 10px; }
-
-/* ABAS */
-.aba { display: none; animation: fadeIn 0.3s; }
-.aba.ativa { display: block; }
+.aba { display: none; }
+.aba.ativa { display: block; animation: fadeIn 0.5s; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* SWITCH TEMA */
-.switch { position: relative; display: inline-block; width: 50px; height: 24px; float: right; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 24px; }
-.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-input:checked + .slider { background-color: var(--primary); }
-input:checked + .slider:before { transform: translateX(26px); }
+.login-container { height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--nav); }
+.login-card { width: 90%; max-width: 350px; text-align: center; }
+.item-lista { border-bottom: 1px solid #ccc; padding: 10px 0; }
