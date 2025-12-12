@@ -1,19 +1,72 @@
- // --- CONFIGURAÇÃO DO FIREBASE ---
-// SUBSTITUA O TRECHO ABAIXO PELO CÓDIGO QUE COPIASTE DO FIREBASE
+ // --- CONFIGURAÇÃO (COLE SEU CÓDIGO DA IMAGEM AQUI) ---
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY_AQUI",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJETO_ID",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "NUMEROS",
-    appId: "CODIGO_GRANDE"
+    apiKey: "SUA_API_KEY", // Pegue da imagem Screenshot_4
+    authDomain: "controle...",
+    projectId: "controle...",
+    storageBucket: "...",
+    messagingSenderId: "...",
+    appId: "..."
 };
 
-// Inicializa o Firebase
+// Inicializa
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 
-// --- FUNÇÕES DO APLICATIVO ---
+// --- CONTROLE DE LOGIN ---
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        // Usuário logado
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-screen').style.display = 'block';
+        carregarLista(); // Carrega dados ao entrar
+    } else {
+        // Usuário deslogado
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('app-screen').style.display = 'none';
+    }
+});
+
+function fazerLogin() {
+    const email = document.getElementById('email-login').value;
+    const senha = document.getElementById('senha-login').value;
+    const msg = document.getElementById('msg-erro');
+
+    auth.signInWithEmailAndPassword(email, senha)
+        .catch((error) => {
+            msg.style.display = 'block';
+            msg.innerText = "Erro: " + error.message;
+        });
+}
+
+function fazerLogout() {
+    auth.signOut();
+}
+
+// --- CONTROLE DE ABAS ---
+function mostrarAba(idAba) {
+    // Esconde todas as abas
+    document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
+    document.querySelectorAll('.btn-nav').forEach(el => el.classList.remove('active'));
+    
+    // Mostra a escolhida
+    document.getElementById(idAba).classList.add('ativa');
+    
+    // Destaca o ícone (simples lógica para achar o botão certo, pode ser melhorada)
+    // Aqui apenas removemos o destaque visual anterior
+}
+
+// --- TEMA (DARK MODE) ---
+function alternarTema() {
+    const checkbox = document.getElementById('check-tema');
+    if (checkbox.checked) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+}
+
+// --- FUNÇÕES DO SISTEMA (IGUAIS AS ANTERIORES, COM MELHORIAS) ---
 
 async function salvarPassageiro() {
     const nome = document.getElementById('nome').value.toUpperCase();
@@ -23,86 +76,53 @@ async function salvarPassageiro() {
     const evento = document.getElementById('evento').value;
     const onibus = document.getElementById('onibus').value;
 
-    if (!nome || !valor) {
-        alert("Por favor, preencha pelo menos Nome e Valor.");
-        return;
+    if (!nome || !valor) return alert("Preencha Nome e Valor!");
+
+    try {
+        await db.collection("viagens").add({
+            nome, cpf, valor, data, evento, onibus,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Salvo com sucesso!");
+        // Limpar campos
+        document.getElementById('nome').value = "";
+        document.getElementById('valor').value = "";
+        carregarLista();
+    } catch (e) {
+        alert("Erro ao salvar: " + e.message);
     }
-
-    // Verifica lotação (lógica simples: conta quantos já existem nesse ônibus/evento)
-    const snapshot = await db.collection("viagens")
-        .where("evento", "==", evento)
-        .where("onibus", "==", onibus)
-        .get();
-
-    if (snapshot.size >= 50) {
-        alert(`O Ônibus ${onibus} para o evento ${evento} já atingiu 50 passageiros!`);
-        return;
-    }
-
-    // Salva no Banco de Dados
-    db.collection("viagens").add({
-        nome: nome,
-        cpf: cpf,
-        valor: valor,
-        data: data,
-        evento: evento,
-        onibus: onibus,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp() // Data de registro
-    }).then(() => {
-        alert("Passageiro salvo com sucesso!");
-        limparFormulario();
-        carregarLista(); // Atualiza a tela
-    }).catch((error) => {
-        console.error("Erro ao salvar: ", error);
-        alert("Erro ao salvar. Verifique o console.");
-    });
 }
 
 function carregarLista() {
-    const divLista = document.getElementById('listaPassageiros');
-    divLista.innerHTML = "Carregando...";
-    
     let totalDinheiro = 0;
-    let totalPessoas = 0;
+    let count = 0;
+    const divRecentes = document.getElementById('listaRecentes');
+    const divRelatorio = document.getElementById('listaPassageiros');
+    
+    divRecentes.innerHTML = ""; 
+    divRelatorio.innerHTML = "";
 
-    // Busca todos os dados e ordena por nome
-    db.collection("viagens").orderBy("nome").get().then((querySnapshot) => {
-        divLista.innerHTML = ""; // Limpa a lista atual
-
-        querySnapshot.forEach((doc) => {
+    db.collection("viagens").orderBy("nome").get().then((snap) => {
+        snap.forEach(doc => {
             const p = doc.data();
-            
-            // Soma para o financeiro
             totalDinheiro += p.valor;
-            totalPessoas += 1;
+            count++;
 
-            // Cria o visual de cada passageiro na lista
-            divLista.innerHTML += `
-                <div class="item-lista">
-                    <strong>${p.nome}</strong> <br>
-                    <span class="tag-onibus">Ônibus ${p.onibus}</span> - ${p.evento} <br>
-                    Pagou: R$ ${p.valor.toFixed(2)} em ${formatarData(p.data)}
+            const htmlItem = `
+                <div class="item-lista" style="border-bottom: 1px solid #ccc; padding: 5px;">
+                    <strong>${p.nome}</strong> - R$ ${p.valor} <br>
+                    <small>${p.evento} (Ônibus ${p.onibus})</small>
                 </div>
             `;
+            
+            // Adiciona a todos no relatório
+            divRelatorio.innerHTML += htmlItem;
+            
+            // Adiciona os 5 primeiros na Home como "Recentes" (simplificado)
+            if (count <= 5) divRecentes.innerHTML += htmlItem;
         });
 
-        // Atualiza o painel financeiro
         document.getElementById('totalCaixa').innerText = `R$ ${totalDinheiro.toFixed(2)}`;
-        document.getElementById('totalPassageiros').innerText = totalPessoas;
+        document.getElementById('totalPassageiros').innerText = count;
     });
 }
-
-function limparFormulario() {
-    document.getElementById('nome').value = '';
-    document.getElementById('cpf').value = '';
-    document.getElementById('valor').value = '';
-}
-
-function formatarData(dataAmericana) {
-    if(!dataAmericana) return "--/--";
-    const partes = dataAmericana.split('-');
-    return `${partes[2]}/${partes[1]}`;
-}
-
-// Carrega a lista assim que abre o app
-carregarLista();
