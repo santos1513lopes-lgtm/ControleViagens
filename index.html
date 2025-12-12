@@ -1,0 +1,53 @@
+ <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Viagens</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🚍 Controle de Viagens</h1>
+
+        <div class="card">
+            <h3>Novo Passageiro</h3>
+            <input type="text" id="nome" placeholder="Nome Completo">
+            <input type="text" id="cpf" placeholder="CPF">
+            <input type="number" id="valor" placeholder="Valor Pago (R$)">
+            <input type="date" id="data">
+            
+            <select id="evento">
+                <option value="Assembleia">Assembleia (1 dia)</option>
+                <option value="Congresso">Congresso (3 dias)</option>
+            </select>
+
+            <select id="onibus">
+                <option value="1">Ônibus 01</option>
+                <option value="2">Ônibus 02</option>
+            </select>
+
+            <button onclick="salvarPassageiro()">Salvar Passageiro</button>
+        </div>
+
+        <div class="card financeiro">
+            <h3>💰 Caixa Atual</h3>
+            <p>Total Arrecadado: <strong id="totalCaixa">R$ 0.00</strong></p>
+            <p>Passageiros Totais: <strong id="totalPassageiros">0</strong></p>
+        </div>
+
+        <div class="card">
+            <h3>Lista de Passageiros</h3>
+            <button onclick="carregarLista()" class="btn-refresh">Atualizar Lista</button>
+            <div id="listaPassageiros">
+                </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>

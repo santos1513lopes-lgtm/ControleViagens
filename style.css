@@ -1,0 +1,54 @@
+ body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px; /* Limita a largura para parecer um app */
+    margin: 0 auto;
+}
+
+h1 { text-align: center; color: #333; }
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Garante que o padding não aumente a largura */
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+button:hover { background-color: #218838; }
+
+.financeiro { background-color: #e3f2fd; border-left: 5px solid #2196F3; }
+
+.item-lista {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+}
+.item-lista strong { color: #555; }
+.tag-onibus {
+    background: #ffc107;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8em;
+}
