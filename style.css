@@ -24,7 +24,18 @@ body { background: var(--bg); color: var(--text); font-family: sans-serif; margi
 input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 5px; border: 1px solid var(--border); box-sizing: border-box; background: var(--card); color: var(--text); }
 .row { display: flex; gap: 10px; }
 
-/* BOTÕES */
+/* DASHBOARD */
+.card-dashboard { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+.card-info { background: var(--card); padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.card-info h3 { font-size: 0.9em; margin: 0 0 5px 0; opacity: 0.8; }
+.card-info span { font-size: 1.1em; font-weight: bold; display: block; }
+
+/* CORES DASHBOARD */
+.pendente-card span { color: #ff9800; } /* Laranja para Contas a Pagar */
+.saida span { color: #d32f2f; } /* Vermelho para Já Pago */
+.saldo span { color: #2196F3; } /* Azul para Saldo */
+
+/* BOTÕES ESPECIAIS */
 .btn-save { background: #28a745; color: white; border: none; font-weight: bold; }
 .btn-cancel { background: #6c757d; color: white; border: none; }
 .btn-search { background: #17a2b8; color: white; font-weight: bold; border: none; }
@@ -46,9 +57,11 @@ input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius
 .icon-btn { cursor: pointer; font-size: 1.2rem; }
 .filtros-box { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 5px;}
 .filtros-box select, .filtros-box input { flex: 1; min-width: 100px; }
+
 .tag { padding: 3px 8px; border-radius: 12px; font-size: 0.75em; color: white; margin-left: 5px; }
 .pago { background: #28a745; }
 .pendente { background: #dc3545; }
+.quitado { background: #28a745; }
 
 .ocultar-cpf .cpf-lateral { display: none !important; }
 

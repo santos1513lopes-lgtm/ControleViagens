@@ -24,7 +24,8 @@
             <span class="logo"><i class="material-icons">directions_bus</i> GestãoBus</span>
             <div class="menu-icons">
                 <button onclick="alternarTema()" class="btn-nav" title="Mudar Tema"><i class="material-icons" id="icon-tema">dark_mode</i></button>
-                <button onclick="mostrarAba('aba-home')" class="btn-nav active"><i class="material-icons">home</i></button>
+                <button onclick="mostrarAba('aba-home')" class="btn-nav active"><i class="material-icons">dashboard</i></button>
+                <button onclick="mostrarAba('aba-despesas')" class="btn-nav"><i class="material-icons">payments</i></button>
                 <button onclick="mostrarAba('aba-clientes')" class="btn-nav"><i class="material-icons">people</i></button>
                 <button onclick="mostrarAba('aba-relatorio')" class="btn-nav"><i class="material-icons">list_alt</i></button>
                 <button onclick="fazerLogout()" class="btn-nav" style="color:#ff8a80"><i class="material-icons">logout</i></button>
@@ -34,14 +35,55 @@
         <div class="container">
             
             <div id="aba-home" class="aba ativa">
-                <div class="card financeiro">
-                    <h3>💰 Caixa Atual</h3>
-                    <h1><span id="totalCaixa">R$ 0.00</span></h1>
-                    <p>Pendentes: <strong id="totalPendentes" style="color:red">R$ 0.00</strong></p>
+                <div class="card-dashboard">
+                    <div class="card-info pendente-card">
+                        <h3>A Pagar (Futuro)</h3>
+                        <span id="dash-pendentes-desp">R$ 0,00</span>
+                    </div>
+                    <div class="card-info saida">
+                        <h3>Já Pago (Saídas)</h3>
+                        <span id="dash-saidas">R$ 0,00</span>
+                    </div>
+                    <div class="card-info saldo">
+                        <h3>Saldo em Caixa</h3>
+                        <span id="dash-saldo">R$ 0,00</span>
+                    </div>
                 </div>
+
                 <div class="card">
-                    <h3>Últimos Lançamentos</h3>
+                    <h3>📊 Resumo de Recebimentos</h3>
+                    <p>Total Arrecadado: <strong id="totalCaixa">R$ 0,00</strong></p>
+                    <p>A Receber (Passageiros): <strong id="totalPendentes" style="color:red">R$ 0,00</strong></p>
+                </div>
+
+                <div class="card">
+                    <h3>Últimos Passageiros</h3>
                     <div id="listaRecentes">Carregando...</div>
+                </div>
+            </div>
+
+            <div id="aba-despesas" class="aba">
+                <div class="card">
+                    <h3>💸 Gestão de Despesas</h3>
+                    <input type="hidden" id="id-despesa-editar"> <input type="text" id="desc-despesa" placeholder="Descrição (ex: Aluguel Ônibus)">
+                    
+                    <div class="row">
+                        <input type="tel" id="valor-despesa" placeholder="Valor (R$ 0,00)" oninput="formatarMoeda(this)">
+                        <select id="status-despesa">
+                            <option value="Quitado">✅ Quitado (Pago)</option>
+                            <option value="Pendente">⚠️ Pendente (A Pagar)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <button onclick="salvarDespesa()" id="btn-salvar-despesa" class="btn-pdf" style="background:#d32f2f">Registrar Saída</button>
+                        <button onclick="cancelarEdicaoDespesa()" id="btn-cancelar-despesa" class="btn-cancel" style="display:none;">Cancelar</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Histórico de Despesas</h3>
+                    <div id="listaDespesas">Carregando...</div>
                 </div>
             </div>
 
@@ -69,18 +111,8 @@
                 <div class="card no-print">
                     <h3>🔍 Filtros e Exportação</h3>
                     <div class="filtros-box">
-                        <select id="buscaEvento">
-                            <option value="">Todos Eventos</option>
-                            <option value="Assembleia">Assembleia</option>
-                            <option value="Congresso">Congresso</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                        <select id="buscaOnibus">
-                            <option value="">Todos Ônibus</option>
-                            <option value="1">Ônibus 01</option>
-                            <option value="2">Ônibus 02</option>
-                            <option value="3">Ônibus 03</option>
-                        </select>
+                        <select id="buscaEvento"><option value="">Todos Eventos</option><option value="Assembleia">Assembleia</option><option value="Congresso">Congresso</option><option value="Outros">Outros</option></select>
+                        <select id="buscaOnibus"><option value="">Todos Ônibus</option><option value="1">Ônibus 01</option><option value="2">Ônibus 02</option><option value="3">Ônibus 03</option></select>
                     </div>
                     <div class="filtros-box">
                         <select id="buscaStatus"><option value="">Todos Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option></select>
@@ -99,12 +131,8 @@
                     </div>
 
                     <div class="row">
-                        <button onclick="exportarExcel()" class="btn-excel">
-                            <i class="material-icons" style="font-size:16px; vertical-align:middle">grid_on</i> Baixar Excel
-                        </button>
-                        <button onclick="window.print()" class="btn-pdf">
-                            <i class="material-icons" style="font-size:16px; vertical-align:middle">picture_as_pdf</i> Baixar PDF
-                        </button>
+                        <button onclick="exportarExcel()" class="btn-excel"><i class="material-icons" style="font-size:16px; vertical-align:middle">grid_on</i> Baixar Excel</button>
+                        <button onclick="window.print()" class="btn-pdf"><i class="material-icons" style="font-size:16px; vertical-align:middle">picture_as_pdf</i> Baixar PDF</button>
                     </div>
                 </div>
 
@@ -122,39 +150,25 @@
             <div class="modal-content">
                 <h3 id="titulo-modal">Novo Passageiro</h3>
                 <input type="hidden" id="id-passageiro">
-                
                 <input type="text" id="nome" list="lista-sugestoes" placeholder="Nome (Comece a digitar...)" oninput="verificarCliente()" autocomplete="off">
                 <datalist id="lista-sugestoes"></datalist>
                 <div id="aviso-cliente" class="aviso-neutro">Digite o nome para verificar</div>
-                
                 <input type="text" id="cpf" placeholder="CPF">
-                
                 <div id="opcao-salvar-cliente" style="display:none; margin-bottom: 10px; background: #e3f2fd; padding: 10px; border-radius: 5px;">
                     <label style="display:flex; align-items:center; gap:10px; margin:0; cursor:pointer; color:#0d47a1;">
                         <input type="checkbox" id="check-salvar-cliente" style="width:20px; height:20px; margin:0;"> Salvar na lista de clientes?
                     </label>
                 </div>
-                
                 <div class="row">
                     <input type="tel" id="valor" placeholder="Valor (R$ 0,00)" oninput="formatarMoeda(this)">
                     <select id="status"><option value="Pago">✅ Pago</option><option value="Pendente">⚠️ Pendente</option></select>
                 </div>
-                
                 <label>Detalhes da Viagem:</label>
                 <div class="row">
                     <input type="date" id="data">
-                    <select id="onibus">
-                        <option value="1">Bus 01</option>
-                        <option value="2">Bus 02</option>
-                        <option value="3">Bus 03</option>
-                    </select>
+                    <select id="onibus"><option value="1">Bus 01</option><option value="2">Bus 02</option><option value="3">Bus 03</option></select>
                 </div>
-                <select id="evento">
-                    <option value="Assembleia">Assembleia</option>
-                    <option value="Congresso">Congresso</option>
-                    <option value="Outros">Outros</option>
-                </select>
-                
+                <select id="evento"><option value="Assembleia">Assembleia</option><option value="Congresso">Congresso</option><option value="Outros">Outros</option></select>
                 <div class="modal-actions">
                     <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
                     <button onclick="salvarPassageiro()" class="btn-save">Confirmar</button>
