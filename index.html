@@ -21,16 +21,28 @@
     <div id="app-screen" style="display: none;">
         
         <nav class="navbar">
-            <span class="logo"><i class="material-icons">directions_bus</i> GestãoBus</span>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <i class="material-icons btn-menu-toggle" onclick="toggleSidebar()">menu</i>
+                <span class="logo"><i class="material-icons">directions_bus</i> GestãoBus</span>
+            </div>
+            
             <div class="menu-icons">
                 <button onclick="alternarTema()" class="btn-nav" title="Mudar Tema"><i class="material-icons" id="icon-tema">dark_mode</i></button>
-                <button onclick="mostrarAba('aba-home')" class="btn-nav active"><i class="material-icons">dashboard</i></button>
-                <button onclick="mostrarAba('aba-despesas')" class="btn-nav"><i class="material-icons">payments</i></button>
-                <button onclick="mostrarAba('aba-clientes')" class="btn-nav"><i class="material-icons">people</i></button>
-                <button onclick="mostrarAba('aba-relatorio')" class="btn-nav"><i class="material-icons">list_alt</i></button>
                 <button onclick="fazerLogout()" class="btn-nav" style="color:#ff8a80"><i class="material-icons">logout</i></button>
             </div>
         </nav>
+
+        <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+        <div id="mySidebar" class="sidebar">
+            <div class="sidebar-header">
+                <h3>Navegação</h3>
+                <i class="material-icons" onclick="toggleSidebar()" style="cursor:pointer">close</i>
+            </div>
+            <button onclick="mostrarAba('aba-home')" class="btn-sidebar active"><i class="material-icons">dashboard</i> Dashboard</button>
+            <button onclick="mostrarAba('aba-despesas')" class="btn-sidebar"><i class="material-icons">payments</i> Despesas</button>
+            <button onclick="mostrarAba('aba-clientes')" class="btn-sidebar"><i class="material-icons">people</i> Clientes</button>
+            <button onclick="mostrarAba('aba-relatorio')" class="btn-sidebar"><i class="material-icons">list_alt</i> Relatórios</button>
+        </div>
 
         <div class="container">
             
@@ -65,8 +77,8 @@
             <div id="aba-despesas" class="aba">
                 <div class="card">
                     <h3>💸 Gestão de Despesas</h3>
-                    <input type="hidden" id="id-despesa-editar"> <input type="text" id="desc-despesa" placeholder="Descrição (ex: Aluguel Ônibus)">
-                    
+                    <input type="hidden" id="id-despesa-editar">
+                    <input type="text" id="desc-despesa" placeholder="Descrição (ex: Aluguel Ônibus)">
                     <div class="row">
                         <input type="tel" id="valor-despesa" placeholder="Valor (R$ 0,00)" oninput="formatarMoeda(this)">
                         <select id="status-despesa">
@@ -74,13 +86,11 @@
                             <option value="Pendente">⚠️ Pendente (A Pagar)</option>
                         </select>
                     </div>
-                    
                     <div class="row">
                         <button onclick="salvarDespesa()" id="btn-salvar-despesa" class="btn-pdf" style="background:#d32f2f">Registrar Saída</button>
                         <button onclick="cancelarEdicaoDespesa()" id="btn-cancelar-despesa" class="btn-cancel" style="display:none;">Cancelar</button>
                     </div>
                 </div>
-
                 <div class="card">
                     <h3>Histórico de Despesas</h3>
                     <div id="listaDespesas">Carregando...</div>
@@ -118,24 +128,19 @@
                         <select id="buscaStatus"><option value="">Todos Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option></select>
                         <input type="date" id="buscaData">
                     </div>
-                    
                     <button onclick="carregarRelatorioFiltrado()" class="btn-search">🔎 Filtrar Lista</button>
-                    
                     <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-                    
                     <div style="margin-bottom: 10px; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 5px;">
                         <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:bold; color:var(--text);">
                             <input type="checkbox" id="check-mostrar-cpf" checked onchange="atualizarVisualCpf()" style="width:18px; height:18px;"> 
                             Incluir CPF na lista/relatórios
                         </label>
                     </div>
-
                     <div class="row">
                         <button onclick="exportarExcel()" class="btn-excel"><i class="material-icons" style="font-size:16px; vertical-align:middle">grid_on</i> Baixar Excel</button>
                         <button onclick="window.print()" class="btn-pdf"><i class="material-icons" style="font-size:16px; vertical-align:middle">picture_as_pdf</i> Baixar PDF</button>
                     </div>
                 </div>
-
                 <div id="cabecalho-impresso" class="only-print"></div>
                 <div id="listaRelatorio"></div>
                 <div class="resumo-final">

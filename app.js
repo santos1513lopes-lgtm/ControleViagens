@@ -38,20 +38,43 @@ function fazerLogin() { const email = document.getElementById('email-login').val
 function fazerLogout() { auth.signOut(); }
 function alternarTema() { const html = document.documentElement; const icon = document.getElementById('icon-tema'); if (html.getAttribute('data-theme') !== 'dark') { html.setAttribute('data-theme', 'dark'); icon.innerText = 'light_mode'; } else { html.setAttribute('data-theme', 'light'); icon.innerText = 'dark_mode'; } }
 
+// --- SIDEBAR (MENU LATERAL) ---
+function toggleSidebar() {
+    const sidebar = document.getElementById('mySidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+    } else {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+    }
+}
+
 // --- NAVEGAÇÃO ---
 function mostrarAba(id) {
     document.querySelectorAll('.aba').forEach(e => e.classList.remove('ativa'));
-    document.querySelectorAll('.btn-nav').forEach(e => e.classList.remove('active'));
+    
+    // Atualiza a sidebar
+    document.querySelectorAll('.btn-sidebar').forEach(e => e.classList.remove('active'));
+    
     document.getElementById(id).classList.add('ativa');
-    const btns = document.querySelectorAll('.btn-nav');
+    
+    // Encontra o botão certo na sidebar e ativa
+    const btns = document.querySelectorAll('.btn-sidebar');
     btns.forEach(btn => { if(btn.getAttribute('onclick') === `mostrarAba('${id}')`) btn.classList.add('active'); });
+    
+    // Fecha a sidebar se estiver aberta (UX Mobile)
+    const sidebar = document.getElementById('mySidebar');
+    if (sidebar.classList.contains('open')) toggleSidebar();
+
     if(id === 'aba-relatorio') carregarRelatorioFiltrado();
     if(id === 'aba-clientes') carregarClientesBase();
     if(id === 'aba-despesas') carregarDespesas();
     if(id === 'aba-home') carregarResumoHome();
 }
 
-// --- GESTÃO DE DESPESAS (ATUALIZADA) ---
+// --- GESTÃO DE DESPESAS ---
 async function salvarDespesa() {
     const idEdicao = document.getElementById('id-despesa-editar').value;
     const desc = document.getElementById('desc-despesa').value.toUpperCase();
@@ -63,21 +86,10 @@ async function salvarDespesa() {
 
     try {
         if (idEdicao) {
-            // EDITAR
-            await db.collection("despesas").doc(idEdicao).update({
-                descricao: desc,
-                valor: valorFloat,
-                status: status
-            });
+            await db.collection("despesas").doc(idEdicao).update({ descricao: desc, valor: valorFloat, status: status });
             alert("Despesa atualizada!");
         } else {
-            // CRIAR NOVA
-            await db.collection("despesas").add({
-                descricao: desc,
-                valor: valorFloat,
-                status: status,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            await db.collection("despesas").add({ descricao: desc, valor: valorFloat, status: status, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
             alert("Despesa registrada!");
         }
         cancelarEdicaoDespesa();
@@ -86,125 +98,46 @@ async function salvarDespesa() {
 }
 
 async function carregarDespesas() {
-    const divLista = document.getElementById('listaDespesas');
-    divLista.innerHTML = "Carregando...";
-    const snap = await db.collection("despesas").orderBy("timestamp", "desc").get();
-    let html = "";
-    
+    const divLista = document.getElementById('listaDespesas'); divLista.innerHTML = "Carregando...";
+    const snap = await db.collection("despesas").orderBy("timestamp", "desc").get(); let html = "";
     snap.forEach(doc => {
-        const d = doc.data();
-        const statusClass = d.status === 'Pendente' ? 'pendente' : 'quitado';
-        
-        // Adicionei o botão de editar (Lápis)
-        html += `
-            <div class="item-lista item-despesa">
-                <div>
-                    ${d.descricao} <span class="tag ${statusClass}">${d.status || 'Quitado'}</span>
-                </div>
-                <div style="text-align:right">
-                    <strong>- ${formatarReais(d.valor)}</strong>
-                    <div style="margin-top:5px;">
-                        <i class="material-icons icon-btn" onclick="editarDespesa('${doc.id}', '${d.descricao}', ${d.valor}, '${d.status}')" style="color:#ffa000">edit</i>
-                        <i class="material-icons icon-btn" onclick="excluirDespesa('${doc.id}')" style="color:#d32f2f; margin-left:10px;">delete</i>
-                    </div>
-                </div>
-            </div>
-        `;
+        const d = doc.data(); const statusClass = d.status === 'Pendente' ? 'pendente' : 'quitado';
+        html += `<div class="item-lista item-despesa"><div>${d.descricao} <span class="tag ${statusClass}">${d.status || 'Quitado'}</span></div><div style="text-align:right"><strong>- ${formatarReais(d.valor)}</strong><div style="margin-top:5px;"><i class="material-icons icon-btn" onclick="editarDespesa('${doc.id}', '${d.descricao}', ${d.valor}, '${d.status}')" style="color:#ffa000">edit</i><i class="material-icons icon-btn" onclick="excluirDespesa('${doc.id}')" style="color:#d32f2f; margin-left:10px;">delete</i></div></div></div>`;
     });
-    
     divLista.innerHTML = html || "Nenhuma despesa lançada.";
 }
-
-// FUNÇÃO PARA EDITAR DESPESA (POPULA O FORMULÁRIO)
 function editarDespesa(id, desc, valor, status) {
-    document.getElementById('id-despesa-editar').value = id;
-    document.getElementById('desc-despesa').value = desc;
-    
-    // Formata o valor para o input
+    document.getElementById('id-despesa-editar').value = id; document.getElementById('desc-despesa').value = desc;
     document.getElementById('valor-despesa').value = valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     document.getElementById('status-despesa').value = status || 'Quitado';
-    
-    // Muda o botão
-    const btn = document.getElementById('btn-salvar-despesa');
-    btn.innerText = "Salvar Alteração";
-    btn.style.background = "#ffa000";
-    document.getElementById('btn-cancelar-despesa').style.display = "block";
-    
-    // Rola para cima
-    document.querySelector('.container').scrollIntoView();
+    const btn = document.getElementById('btn-salvar-despesa'); btn.innerText = "Salvar Alteração"; btn.style.background = "#ffa000"; document.getElementById('btn-cancelar-despesa').style.display = "block"; document.querySelector('.container').scrollIntoView();
 }
-
 function cancelarEdicaoDespesa() {
-    document.getElementById('id-despesa-editar').value = "";
-    document.getElementById('desc-despesa').value = "";
-    document.getElementById('valor-despesa').value = "";
-    document.getElementById('status-despesa').value = "Quitado";
-    
-    const btn = document.getElementById('btn-salvar-despesa');
-    btn.innerText = "Registrar Saída";
-    btn.style.background = "#d32f2f";
-    document.getElementById('btn-cancelar-despesa').style.display = "none";
+    document.getElementById('id-despesa-editar').value = ""; document.getElementById('desc-despesa').value = ""; document.getElementById('valor-despesa').value = ""; document.getElementById('status-despesa').value = "Quitado";
+    const btn = document.getElementById('btn-salvar-despesa'); btn.innerText = "Registrar Saída"; btn.style.background = "#d32f2f"; document.getElementById('btn-cancelar-despesa').style.display = "none";
 }
-
-async function excluirDespesa(id) {
-    if(confirm("Remover esta despesa?")) {
-        await db.collection("despesas").doc(id).delete();
-        carregarDespesas();
-    }
-}
+async function excluirDespesa(id) { if(confirm("Remover esta despesa?")) { await db.collection("despesas").doc(id).delete(); carregarDespesas(); } }
 
 // --- DASHBOARD (HOME) ---
 async function carregarResumoHome() { 
-    // 1. Soma Entradas
-    let totalEntradas = 0;
-    let pendenteEntrada = 0;
+    let totalEntradas = 0; let pendenteEntrada = 0;
     const snapViagens = await db.collection("viagens").get();
-    snapViagens.forEach(doc => { 
-        const p = doc.data(); 
-        totalEntradas += p.valor; 
-        if(p.status === 'Pendente') pendenteEntrada += p.valor; 
-    });
-
-    // 2. Soma Despesas (Saídas)
-    let totalSaidasPagas = 0;
-    let totalSaidasPendentes = 0; // Novo acumulador
+    snapViagens.forEach(doc => { const p = doc.data(); totalEntradas += p.valor; if(p.status === 'Pendente') pendenteEntrada += p.valor; });
+    let totalSaidasPagas = 0; let totalSaidasPendentes = 0;
     const snapDespesas = await db.collection("despesas").get();
-    snapDespesas.forEach(doc => { 
-        const d = doc.data();
-        if (d.status === 'Quitado' || !d.status) { 
-            totalSaidasPagas += d.valor; 
-        } else {
-            totalSaidasPendentes += d.valor; // Soma o que falta pagar
-        }
-    });
-
-    // 3. Calcula Saldo (Entradas - Saídas PAGAS)
+    snapDespesas.forEach(doc => { const d = doc.data(); if (d.status === 'Quitado' || !d.status) { totalSaidasPagas += d.valor; } else { totalSaidasPendentes += d.valor; } });
     const saldo = totalEntradas - totalSaidasPagas;
-
-    // 4. Atualiza Tela
-    // CARTÃO 1: Agora mostra as Contas a Pagar (Futuro)
     document.getElementById('dash-pendentes-desp').innerText = formatarReais(totalSaidasPendentes);
-    
-    // CARTÃO 2: Mostra o que já saiu (Pago)
     document.getElementById('dash-saidas').innerText = formatarReais(totalSaidasPagas);
-    
-    // CARTÃO 3: Saldo Real
-    const elSaldo = document.getElementById('dash-saldo');
-    elSaldo.innerText = formatarReais(saldo);
-    elSaldo.style.color = saldo >= 0 ? '#2196F3' : '#d32f2f';
-
-    // Resumo
+    const elSaldo = document.getElementById('dash-saldo'); elSaldo.innerText = formatarReais(saldo); elSaldo.style.color = saldo >= 0 ? '#2196F3' : '#d32f2f';
     document.getElementById('totalCaixa').innerText = formatarReais(totalEntradas); 
     document.getElementById('totalPendentes').innerText = formatarReais(pendenteEntrada); 
-
-    // Lista Recente
-    const div = document.getElementById('listaRecentes'); 
-    div.innerHTML = ""; 
+    const div = document.getElementById('listaRecentes'); div.innerHTML = ""; 
     const snapRecentes = await db.collection("viagens").orderBy("timestamp", "desc").limit(5).get(); 
     snapRecentes.forEach(doc => div.innerHTML += montarItemHTML(doc.id, doc.data(), false));
 }
 
-// --- RESTO DO CÓDIGO (MANTIDO) ---
+// --- RESTO DO CÓDIGO (CLIENTES, EXPORTAR, ETC) ---
 function atualizarVisualCpf() { const chk = document.getElementById('check-mostrar-cpf'); const lista = document.getElementById('listaRelatorio'); if (chk.checked) lista.classList.remove('ocultar-cpf'); else lista.classList.add('ocultar-cpf'); }
 async function exportarExcel() {
     const fEv = document.getElementById('buscaEvento').value; const fBus = document.getElementById('buscaOnibus').value; const fSt = document.getElementById('buscaStatus').value; const fDt = document.getElementById('buscaData').value; const mostrarCpf = document.getElementById('check-mostrar-cpf').checked;
