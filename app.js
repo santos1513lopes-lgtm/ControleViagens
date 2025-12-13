@@ -1,4 +1,4 @@
- // --- CONFIGURAÇÃO DO FIREBASE ---
+ // --- CONFIGURAÇÃO (SUA CHAVE AQUI) ---
 const firebaseConfig = {
     apiKey: "AIzaSyDfPayKm4sLU2lNdaBuOQzxgPMBmFAd0qk",
     authDomain: "controleviagens-ed5e9.firebaseapp.com",
@@ -8,17 +8,16 @@ const firebaseConfig = {
     appId: "1:949452854484:web:1609cb7d237c4985c41741"
 };
 
-// Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// --- LOGIN / LOGOUT ---
-auth.onAuthStateChanged((user) => {
+// --- LOGIN ---
+auth.onAuthStateChanged(user => {
     if (user) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-screen').style.display = 'block';
-        carregarResumoHome(); // Carrega o caixa da Home
+        carregarTudo();
     } else {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('app-screen').style.display = 'none';
@@ -28,122 +27,197 @@ auth.onAuthStateChanged((user) => {
 function fazerLogin() {
     const email = document.getElementById('email-login').value;
     const senha = document.getElementById('senha-login').value;
-    auth.signInWithEmailAndPassword(email, senha).catch(erro => alert("Erro: " + erro.message));
+    auth.signInWithEmailAndPassword(email, senha).catch(e => alert("Erro: " + e.message));
 }
-
 function fazerLogout() { auth.signOut(); }
 
-// --- NAVEGAÇÃO ---
-function mostrarAba(idAba) {
-    document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
-    document.querySelectorAll('.btn-nav').forEach(el => el.classList.remove('active'));
-    document.getElementById(idAba).classList.add('ativa');
+// --- CONTROLE DO MODAL ---
+function abrirModal(idEdicao = null) {
+    const modal = document.getElementById('modal-form');
+    modal.style.display = 'flex';
     
-    // Se clicou em relatório, carrega a lista padrão
-    if(idAba === 'aba-relatorio') carregarRelatorioFiltrado();
-    // Se clicou na home, atualiza o caixa
-    if(idAba === 'aba-home') carregarResumoHome();
-}
-
-function alternarTema() {
-    const checkbox = document.getElementById('check-tema');
-    document.documentElement.setAttribute('data-theme', checkbox.checked ? 'dark' : 'light');
-}
-
-// --- SALVAR PASSAGEIRO ---
-async function salvarPassageiro() {
-    const nome = document.getElementById('nome').value.toUpperCase();
-    const cpf = document.getElementById('cpf').value;
-    const valor = parseFloat(document.getElementById('valor').value);
-    const data = document.getElementById('data').value;
-    const evento = document.getElementById('evento').value;
-    const onibus = document.getElementById('onibus').value;
-
-    if (!nome || !valor) return alert("Preencha Nome e Valor!");
-
-    try {
-        await db.collection("viagens").add({
-            nome, cpf, valor, data, evento, onibus,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert("Passageiro Salvo!");
-        document.getElementById('nome').value = "";
-        document.getElementById('valor').value = "";
-        carregarResumoHome(); // Atualiza o caixa
-    } catch (e) {
-        alert("Erro ao salvar: " + e.message);
+    if (idEdicao) {
+        document.getElementById('titulo-modal').innerText = "Editar Passageiro";
+    } else {
+        document.getElementById('titulo-modal').innerText = "Novo Passageiro";
+        limparFormulario();
+        // Define data de hoje como padrão
+        document.getElementById('data').valueAsDate = new Date();
     }
 }
 
-// --- RESUMO DA TELA INICIAL (CAIXA) ---
-function carregarResumoHome() {
-    let total = 0;
-    let qtd = 0;
-    db.collection("viagens").get().then(snap => {
-        snap.forEach(doc => {
-            total += doc.data().valor;
-            qtd++;
-        });
-        document.getElementById('totalCaixa').innerText = `R$ ${total.toFixed(2)}`;
-        document.getElementById('totalPassageiros').innerText = qtd;
-    });
+function fecharModal() {
+    document.getElementById('modal-form').style.display = 'none';
 }
 
-// --- RELATÓRIO COM FILTROS (LÓGICA NOVA) ---
+function limparFormulario() {
+    document.getElementById('id-passageiro').value = "";
+    document.getElementById('nome').value = "";
+    document.getElementById('cpf').value = "";
+    document.getElementById('valor').value = "";
+    document.getElementById('status').value = "Pago";
+}
+
+// --- CRUD (SALVAR, EDITAR, EXCLUIR) ---
+async function salvarPassageiro() {
+    const id = document.getElementById('id-passageiro').value;
+    const dados = {
+        nome: document.getElementById('nome').value.toUpperCase(),
+        cpf: document.getElementById('cpf').value,
+        valor: parseFloat(document.getElementById('valor').value),
+        status: document.getElementById('status').value, // Novo campo
+        data: document.getElementById('data').value,
+        evento: document.getElementById('evento').value,
+        onibus: document.getElementById('onibus').value,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if (!dados.nome || !dados.valor) return alert("Preencha Nome e Valor!");
+
+    try {
+        if (id) {
+            // Se tem ID, é Edição
+            await db.collection("viagens").doc(id).update(dados);
+            alert("Atualizado com sucesso!");
+        } else {
+            // Se não tem ID, é Novo
+            await db.collection("viagens").add(dados);
+            alert("Cadastrado com sucesso!");
+        }
+        fecharModal();
+        carregarTudo();
+    } catch (e) {
+        alert("Erro: " + e.message);
+    }
+}
+
+async function editarPassageiro(id) {
+    const doc = await db.collection("viagens").doc(id).get();
+    const p = doc.data();
+    
+    document.getElementById('id-passageiro').value = id;
+    document.getElementById('nome').value = p.nome;
+    document.getElementById('cpf').value = p.cpf;
+    document.getElementById('valor').value = p.valor;
+    document.getElementById('status').value = p.status || 'Pago';
+    document.getElementById('data').value = p.data;
+    document.getElementById('evento').value = p.evento;
+    document.getElementById('onibus').value = p.onibus;
+    
+    abrirModal(id);
+}
+
+async function excluirPassageiro(id) {
+    if(confirm("Tem certeza que deseja excluir?")) {
+        await db.collection("viagens").doc(id).delete();
+        carregarTudo();
+    }
+}
+
+// --- LISTAGEM E RELATÓRIOS ---
+function carregarTudo() {
+    carregarResumoHome();
+    carregarRelatorioFiltrado();
+}
+
+async function carregarResumoHome() {
+    let total = 0, pendente = 0;
+    const divRecentes = document.getElementById('listaRecentes');
+    divRecentes.innerHTML = "";
+
+    // Pega os últimos 5 para a Home
+    const snap = await db.collection("viagens").orderBy("timestamp", "desc").limit(5).get();
+    
+    snap.forEach(doc => {
+        const p = doc.data();
+        divRecentes.innerHTML += montarItemHTML(doc.id, p, false);
+    });
+
+    // Calcula Totais Gerais
+    const fullSnap = await db.collection("viagens").get();
+    fullSnap.forEach(doc => {
+        const p = doc.data();
+        if(p.status === 'Pago' || !p.status) total += p.valor; // Se não tiver status, conta como pago
+        if(p.status === 'Pendente') pendente += p.valor;
+    });
+
+    document.getElementById('totalCaixa').innerText = `R$ ${total.toFixed(2)}`;
+    document.getElementById('totalPendentes').innerText = `R$ ${pendente.toFixed(2)}`;
+}
+
 async function carregarRelatorioFiltrado() {
     const divLista = document.getElementById('listaRelatorio');
-    const filtroEvento = document.getElementById('buscaEvento').value;
-    const filtroOnibus = document.getElementById('buscaOnibus').value;
-    const filtroData = document.getElementById('buscaData').value;
+    const fEvento = document.getElementById('buscaEvento').value;
+    const fOnibus = document.getElementById('buscaOnibus').value;
+    const fStatus = document.getElementById('buscaStatus').value;
 
-    divLista.innerHTML = "<p style='text-align:center'>Carregando...</p>";
-
+    divLista.innerHTML = "Carregando...";
     const snap = await db.collection("viagens").orderBy("nome").get();
     
     let html = "";
-    let totalFiltrado = 0;
-    let qtdFiltrada = 0;
-    
-    // Título para impressão
-    let tituloPrint = "RELATÓRIO GERAL";
-    if(filtroEvento) tituloPrint += ` - ${filtroEvento}`;
-    if(filtroOnibus) tituloPrint += ` - Ônibus ${filtroOnibus}`;
-    document.getElementById('cabecalho-impresso').innerText = tituloPrint;
+    let qtd = 0, valorTotal = 0;
+    let titulo = "RELATÓRIO";
+    if(fEvento) titulo += " - " + fEvento;
+    if(fOnibus) titulo += " - Ônibus " + fOnibus;
+    document.getElementById('cabecalho-impresso').innerText = titulo;
 
     snap.forEach(doc => {
         const p = doc.data();
+        // Filtros
+        if (fEvento && p.evento !== fEvento) return;
+        if (fOnibus && p.onibus !== fOnibus) return;
+        if (fStatus && (p.status || 'Pago') !== fStatus) return;
 
-        // Lógica de Filtro: Se o filtro existe e for diferente, pula
-        if (filtroEvento && p.evento !== filtroEvento) return;
-        if (filtroOnibus && p.onibus !== filtroOnibus) return;
-        if (filtroData && p.data !== filtroData) return;
+        qtd++;
+        if(p.status === 'Pago' || !p.status) valorTotal += p.valor;
 
-        totalFiltrado += p.valor;
-        qtdFiltrada++;
-
-        html += `
-            <div class="item-lista">
-                <div>
-                    <strong>${qtdFiltrada}. ${p.nome}</strong> <br>
-                    <small>CPF: ${p.cpf || '---'}</small> <br>
-                    <small style="color:gray">${p.evento} | Bus ${p.onibus} | ${formatarData(p.data)}</small>
-                </div>
-                <div style="font-weight:bold;">
-                    R$ ${p.valor.toFixed(2)}
-                </div>
-            </div>
-        `;
+        html += montarItemHTML(doc.id, p, true);
     });
 
-    if(qtdFiltrada === 0) html = "<p style='text-align:center'>Nenhum registro encontrado.</p>";
-
-    divLista.innerHTML = html;
-    document.getElementById('resumoQtd').innerText = qtdFiltrada;
-    document.getElementById('resumoValor').innerText = `R$ ${totalFiltrado.toFixed(2)}`;
+    divLista.innerHTML = html || "<p>Nenhum registro.</p>";
+    document.getElementById('resumoQtd').innerText = qtd;
+    document.getElementById('resumoValor').innerText = `R$ ${valorTotal.toFixed(2)}`;
 }
 
-function formatarData(dataUS) {
-    if(!dataUS) return "--/--";
-    const partes = dataUS.split('-');
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+// Monta o visual de cada linha
+function montarItemHTML(id, p, comBotoes) {
+    const statusClass = (p.status === 'Pendente') ? 'pendente' : 'pago';
+    const statusTexto = p.status || 'Pago';
+    
+    // Botões só aparecem se 'comBotoes' for true (na lista completa)
+    const botoes = comBotoes ? `
+        <div class="acoes-item no-print">
+            <i class="material-icons icon-btn" onclick="editarPassageiro('${id}')" style="color:#ffa000">edit</i>
+            <i class="material-icons icon-btn" onclick="excluirPassageiro('${id}')" style="color:#d32f2f">delete</i>
+        </div>
+    ` : '';
+
+    return `
+        <div class="item-lista">
+            <div>
+                <strong>${p.nome}</strong> <span class="tag ${statusClass}">${statusTexto}</span><br>
+                <small>${p.evento} | Bus ${p.onibus} | ${formatarData(p.data)}</small>
+            </div>
+            <div style="text-align:right">
+                <strong>R$ ${p.valor.toFixed(2)}</strong>
+                ${botoes}
+            </div>
+        </div>
+    `;
+}
+
+function formatarData(d) {
+    if(!d) return "--/--";
+    return d.split('-').reverse().join('/');
+}
+
+function mostrarAba(id) {
+    document.querySelectorAll('.aba').forEach(e => e.classList.remove('ativa'));
+    document.getElementById(id).classList.add('ativa');
+    if(id === 'aba-relatorio') carregarRelatorioFiltrado();
+}
+
+function alternarTema() {
+    const chk = document.getElementById('check-tema');
+    document.documentElement.setAttribute('data-theme', chk.checked ? 'dark' : 'light');
 }

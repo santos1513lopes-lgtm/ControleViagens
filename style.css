@@ -1,76 +1,72 @@
- /* --- CORES E TEMA --- */
-:root {
-    --bg: #f4f4f9;
-    --card: #ffffff;
-    --text: #333333;
-    --nav: #2196F3;
-    --border: #cccccc;
+ :root {
+    --bg: #f4f4f9; --card: #fff; --text: #333; --nav: #2196F3; --border: #ccc;
 }
-
 [data-theme="dark"] {
-    --bg: #121212;
-    --card: #1e1e1e;
-    --text: #e0e0e0;
-    --nav: #333333;
-    --border: #444444;
+    --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --nav: #333; --border: #444;
 }
 
-body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; transition: 0.3s; padding-bottom: 50px; }
+body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding-bottom: 80px; transition: 0.3s; }
 
-/* --- LOGIN --- */
-.login-container { height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--nav); }
-.login-card { width: 90%; max-width: 350px; text-align: center; }
-
-/* --- NAVBAR --- */
-.navbar { background: var(--nav); padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
-.btn-nav { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 1.2rem; }
+/* NAVBAR E LOGIN */
+.navbar { background: var(--nav); padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+.btn-nav { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 1.2rem; cursor: pointer; }
 .btn-nav.active { color: white; transform: scale(1.2); }
+.login-container { height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--nav); }
+.login-card { width: 90%; max-width: 350px; text-align: center; padding: 20px; background: white; border-radius: 10px; }
 
-/* --- GERAL --- */
+/* LAYOUT */
 .container { max-width: 600px; margin: 20px auto; padding: 10px; }
-.card { background: var(--card); padding: 20px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
-input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 5px; border: 1px solid var(--border); box-sizing: border-box; background: var(--card); color: var(--text); }
-
-label { font-weight: bold; font-size: 0.9em; display: block; margin-top: 10px; }
-
-.btn-save { background: #28a745; color: white; font-weight: bold; border: none; cursor: pointer; }
-.financeiro h1 { color: #2196F3; margin: 10px 0; }
-
-/* --- ABAS --- */
-.aba { display: none; }
-.aba.ativa { display: block; animation: fadeIn 0.4s; }
+.card { background: var(--card); padding: 15px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.aba { display: none; } .aba.ativa { display: block; animation: fadeIn 0.4s; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* --- RELATÓRIOS E FILTROS --- */
-.filtros-box { display: flex; gap: 5px; flex-wrap: wrap; }
-.filtros-box select, .filtros-box input { flex: 1; min-width: 100px; }
-.btn-search { background: #17a2b8; color: white; font-weight: bold; border: none; cursor: pointer; }
-.btn-print { background: #6c757d; color: white; font-weight: bold; border: none; cursor: pointer; margin-top: 10px; }
+/* INPUTS */
+input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 5px; border: 1px solid var(--border); box-sizing: border-box; background: var(--card); color: var(--text); }
+.row { display: flex; gap: 10px; }
+.btn-save { background: #28a745; color: white; border: none; font-weight: bold; }
+.btn-cancel { background: #6c757d; color: white; border: none; }
+.btn-search { background: #17a2b8; color: white; font-weight: bold; border: none; }
 
+/* FAB (BOTÃO FLUTUANTE +) */
+.fab {
+    position: fixed; bottom: 20px; right: 20px;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: #2196F3; color: white; border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer; z-index: 200;
+}
+.fab:active { transform: scale(0.95); }
+
+/* MODAL (JANELA FLUTUANTE) */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 300;
+    justify-content: center; align-items: center;
+}
+.modal-content {
+    background: var(--card); padding: 20px; border-radius: 10px;
+    width: 90%; max-width: 400px;
+}
+.modal-actions { display: flex; gap: 10px; margin-top: 10px; }
+
+/* LISTA E STATUS */
 .item-lista { border-bottom: 1px solid var(--border); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
-.resumo-final { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 5px; text-align: right; margin-top: 20px; }
+.acoes-item { display: flex; gap: 10px; }
+.icon-btn { cursor: pointer; font-size: 1.2rem; }
+.filtros-box { display: flex; gap: 5px; flex-wrap: wrap; }
+.filtros-box select { flex: 1; min-width: 100px; }
 
-/* --- IMPRESSÃO (O SEGREDO) --- */
+/* ETIQUETAS DE STATUS */
+.tag { padding: 3px 8px; border-radius: 12px; font-size: 0.75em; color: white; margin-left: 5px; }
+.pago { background: #28a745; }
+.pendente { background: #dc3545; }
+
+/* IMPRESSÃO */
 .only-print { display: none; }
-
 @media print {
-    /* Esconde menu, botões e filtros */
-    .navbar, .btn-nav, .no-print, .btn-save, .btn-search, .btn-print, .opcao-tema, button {
-        display: none !important;
-    }
-    
-    /* Ajusta fundo para papel branco */
-    body, .card, #app-screen {
-        background: white !important;
-        color: black !important;
-        box-shadow: none !important;
-        margin: 0 !important; padding: 0 !important;
-    }
-
-    /* Mostra cabeçalho de impressão */
+    .navbar, .fab, .no-print, .acoes-item, .btn-save, button { display: none !important; }
+    body, .card, #app-screen { background: white !important; color: black !important; box-shadow: none; margin: 0; padding: 0; }
     .only-print { display: block; text-align: center; margin-bottom: 20px; font-size: 1.5em; font-weight: bold; }
-    
     .item-lista { border-bottom: 1px solid #000; }
-    .resumo-final { border-top: 2px solid #000; background: none; }
 }

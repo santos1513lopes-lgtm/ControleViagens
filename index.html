@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Viagens</title>
+    <title>GestãoBus Pro</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,10 +11,10 @@
 
     <div id="login-screen" class="login-container">
         <div class="card login-card">
-            <h2>🚍 Acesso Restrito</h2>
+            <h2>🚍 GestãoBus</h2>
             <input type="email" id="email-login" placeholder="E-mail">
             <input type="password" id="senha-login" placeholder="Senha">
-            <button onclick="fazerLogin()">Entrar no Sistema</button>
+            <button onclick="fazerLogin()">Entrar</button>
         </div>
     </div>
 
@@ -24,7 +24,6 @@
             <span class="logo">GestãoBus</span>
             <div class="menu-icons">
                 <button onclick="mostrarAba('aba-home')" class="btn-nav active"><i class="material-icons">home</i></button>
-                <button onclick="mostrarAba('aba-cadastro')" class="btn-nav"><i class="material-icons">person_add</i></button>
                 <button onclick="mostrarAba('aba-relatorio')" class="btn-nav"><i class="material-icons">list_alt</i></button>
                 <button onclick="mostrarAba('aba-config')" class="btn-nav"><i class="material-icons">settings</i></button>
             </div>
@@ -36,70 +35,31 @@
                 <div class="card financeiro">
                     <h3>💰 Caixa Atual</h3>
                     <h1><span id="totalCaixa">R$ 0.00</span></h1>
-                    <p>Total Passageiros: <strong id="totalPassageiros">0</strong></p>
+                    <p>Pendentes: <strong id="totalPendentes" style="color:red">R$ 0.00</strong></p>
                 </div>
+                
                 <div class="card">
-                    <h3>Bem-vindo!</h3>
-                    <p>Use o menu acima para navegar.</p>
-                </div>
-            </div>
-
-            <div id="aba-cadastro" class="aba">
-                <div class="card">
-                    <h3>Novo Passageiro</h3>
-                    <input type="text" id="nome" placeholder="Nome Completo">
-                    <input type="text" id="cpf" placeholder="CPF">
-                    <input type="number" id="valor" placeholder="Valor (R$)">
-                    <label>Data da Viagem:</label>
-                    <input type="date" id="data">
-                    
-                    <label>Tipo de Evento:</label>
-                    <select id="evento">
-                        <option value="Assembleia">Assembleia (1 dia)</option>
-                        <option value="Congresso">Congresso (3 dias)</option>
-                    </select>
-
-                    <label>Ônibus:</label>
-                    <select id="onibus">
-                        <option value="1">Ônibus 01</option>
-                        <option value="2">Ônibus 02</option>
-                    </select>
-                    
-                    <button onclick="salvarPassageiro()" class="btn-save">Salvar Passageiro</button>
+                    <h3>Últimos Lançamentos</h3>
+                    <div id="listaRecentes">Carregando...</div>
                 </div>
             </div>
 
             <div id="aba-relatorio" class="aba">
                 <div class="card no-print">
-                    <h3>🔍 Filtrar Relatório</h3>
-                    
+                    <h3>🔍 Filtros</h3>
                     <div class="filtros-box">
-                        <select id="buscaEvento">
-                            <option value="">Todos os Eventos</option>
-                            <option value="Assembleia">Assembleia</option>
-                            <option value="Congresso">Congresso</option>
-                        </select>
-
-                        <select id="buscaOnibus">
-                            <option value="">Todos os Ônibus</option>
-                            <option value="1">Ônibus 01</option>
-                            <option value="2">Ônibus 02</option>
-                        </select>
-
-                        <input type="date" id="buscaData" title="Data da Viagem">
+                        <select id="buscaEvento"><option value="">Todos Eventos</option><option value="Assembleia">Assembleia</option><option value="Congresso">Congresso</option></select>
+                        <select id="buscaOnibus"><option value="">Todos Ônibus</option><option value="1">Ônibus 01</option><option value="2">Ônibus 02</option></select>
+                        <select id="buscaStatus"><option value="">Todos Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option></select>
                     </div>
-
-                    <button onclick="carregarRelatorioFiltrado()" class="btn-search">🔎 Buscar</button>
-                    <button onclick="window.print()" class="btn-print">🖨️ Imprimir Lista</button>
+                    <button onclick="carregarRelatorioFiltrado()" class="btn-search">Filtrar</button>
+                    <button onclick="window.print()" class="btn-print">Imprimir</button>
                 </div>
 
                 <div id="cabecalho-impresso" class="only-print"></div>
-
                 <div id="listaRelatorio"></div>
-                
                 <div class="resumo-final">
-                    <p>Quantidade: <strong id="resumoQtd">0</strong></p>
-                    <p>Total Filtrado: <strong id="resumoValor">R$ 0.00</strong></p>
+                    <p>Qtd: <strong id="resumoQtd">0</strong> | Total: <strong id="resumoValor">R$ 0.00</strong></p>
                 </div>
             </div>
 
@@ -111,17 +71,54 @@
                         <input type="checkbox" id="check-tema" onchange="alternarTema()">
                     </div>
                     <hr>
-                    <button onclick="fazerLogout()" style="background: #d32f2f; margin-top: 10px;">Sair do Sistema</button>
+                    <button onclick="fazerLogout()" style="background: #d32f2f; margin-top:10px;">Sair</button>
                 </div>
             </div>
-
         </div>
+
+        <button class="fab" onclick="abrirModal()">
+            <i class="material-icons">add</i>
+        </button>
+
+        <div id="modal-form" class="modal-overlay">
+            <div class="modal-content">
+                <h3 id="titulo-modal">Novo Passageiro</h3>
+                <input type="hidden" id="id-passageiro"> <input type="text" id="nome" placeholder="Nome Completo">
+                <input type="text" id="cpf" placeholder="CPF">
+                
+                <div class="row">
+                    <input type="number" id="valor" placeholder="Valor (R$)">
+                    <select id="status">
+                        <option value="Pago">✅ Pago</option>
+                        <option value="Pendente">⚠️ Pendente</option>
+                    </select>
+                </div>
+
+                <label>Detalhes da Viagem:</label>
+                <div class="row">
+                    <input type="date" id="data">
+                    <select id="onibus">
+                        <option value="1">Bus 01</option>
+                        <option value="2">Bus 02</option>
+                    </select>
+                </div>
+                <select id="evento">
+                    <option value="Assembleia">Assembleia</option>
+                    <option value="Congresso">Congresso</option>
+                </select>
+
+                <div class="modal-actions">
+                    <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
+                    <button onclick="salvarPassageiro()" class="btn-save">Salvar</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    
     <script src="app.js"></script>
 </body>
 </html>
