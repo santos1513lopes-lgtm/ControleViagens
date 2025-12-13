@@ -19,7 +19,6 @@
     </div>
 
     <div id="app-screen" style="display: none;">
-        
         <nav class="navbar">
             <span class="logo">GestãoBus</span>
             <div class="menu-icons">
@@ -30,14 +29,12 @@
         </nav>
 
         <div class="container">
-            
             <div id="aba-home" class="aba ativa">
                 <div class="card financeiro">
                     <h3>💰 Caixa Atual</h3>
                     <h1><span id="totalCaixa">R$ 0.00</span></h1>
                     <p>Pendentes: <strong id="totalPendentes" style="color:red">R$ 0.00</strong></p>
                 </div>
-                
                 <div class="card">
                     <h3>Últimos Lançamentos</h3>
                     <div id="listaRecentes">Carregando...</div>
@@ -50,14 +47,20 @@
                     <div class="filtros-box">
                         <select id="buscaEvento"><option value="">Todos Eventos</option><option value="Assembleia">Assembleia</option><option value="Congresso">Congresso</option></select>
                         <select id="buscaOnibus"><option value="">Todos Ônibus</option><option value="1">Ônibus 01</option><option value="2">Ônibus 02</option></select>
-                        <select id="buscaStatus"><option value="">Todos Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option></select>
                     </div>
+                    <div class="filtros-box">
+                        <select id="buscaStatus"><option value="">Todos Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option></select>
+                        <input type="date" id="buscaData" title="Filtrar por Data">
+                    </div>
+                    
                     <button onclick="carregarRelatorioFiltrado()" class="btn-search">Filtrar</button>
-                    <button onclick="window.print()" class="btn-print">Imprimir</button>
+                    <button onclick="window.print()" class="btn-print">Imprimir Lista</button>
                 </div>
 
                 <div id="cabecalho-impresso" class="only-print"></div>
+
                 <div id="listaRelatorio"></div>
+                
                 <div class="resumo-final">
                     <p>Qtd: <strong id="resumoQtd">0</strong> | Total: <strong id="resumoValor">R$ 0.00</strong></p>
                 </div>
@@ -76,36 +79,26 @@
             </div>
         </div>
 
-        <button class="fab" onclick="abrirModal()">
-            <i class="material-icons">add</i>
-        </button>
+        <button class="fab" onclick="abrirModal()"><i class="material-icons">add</i></button>
 
         <div id="modal-form" class="modal-overlay">
             <div class="modal-content">
                 <h3 id="titulo-modal">Novo Passageiro</h3>
-                <input type="hidden" id="id-passageiro"> <input type="text" id="nome" placeholder="Nome Completo">
+                <input type="hidden" id="id-passageiro">
+                
+                <input type="text" id="nome" placeholder="Nome Completo">
                 <input type="text" id="cpf" placeholder="CPF">
                 
                 <div class="row">
                     <input type="number" id="valor" placeholder="Valor (R$)">
-                    <select id="status">
-                        <option value="Pago">✅ Pago</option>
-                        <option value="Pendente">⚠️ Pendente</option>
-                    </select>
+                    <select id="status"><option value="Pago">✅ Pago</option><option value="Pendente">⚠️ Pendente</option></select>
                 </div>
-
                 <label>Detalhes da Viagem:</label>
                 <div class="row">
                     <input type="date" id="data">
-                    <select id="onibus">
-                        <option value="1">Bus 01</option>
-                        <option value="2">Bus 02</option>
-                    </select>
+                    <select id="onibus"><option value="1">Bus 01</option><option value="2">Bus 02</option></select>
                 </div>
-                <select id="evento">
-                    <option value="Assembleia">Assembleia</option>
-                    <option value="Congresso">Congresso</option>
-                </select>
+                <select id="evento"><option value="Assembleia">Assembleia</option><option value="Congresso">Congresso</option></select>
 
                 <div class="modal-actions">
                     <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
@@ -113,7 +106,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
