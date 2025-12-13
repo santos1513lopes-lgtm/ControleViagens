@@ -25,7 +25,7 @@
             <div class="menu-icons">
                 <button onclick="mostrarAba('aba-home')" class="btn-nav active"><i class="material-icons">home</i></button>
                 <button onclick="mostrarAba('aba-cadastro')" class="btn-nav"><i class="material-icons">person_add</i></button>
-                <button onclick="mostrarAba('aba-relatorio')" class="btn-nav"><i class="material-icons">list</i></button>
+                <button onclick="mostrarAba('aba-relatorio')" class="btn-nav"><i class="material-icons">list_alt</i></button>
                 <button onclick="mostrarAba('aba-config')" class="btn-nav"><i class="material-icons">settings</i></button>
             </div>
         </nav>
@@ -38,6 +38,10 @@
                     <h1><span id="totalCaixa">R$ 0.00</span></h1>
                     <p>Total Passageiros: <strong id="totalPassageiros">0</strong></p>
                 </div>
+                <div class="card">
+                    <h3>Bem-vindo!</h3>
+                    <p>Use o menu acima para navegar.</p>
+                </div>
             </div>
 
             <div id="aba-cadastro" class="aba">
@@ -46,23 +50,57 @@
                     <input type="text" id="nome" placeholder="Nome Completo">
                     <input type="text" id="cpf" placeholder="CPF">
                     <input type="number" id="valor" placeholder="Valor (R$)">
+                    <label>Data da Viagem:</label>
                     <input type="date" id="data">
+                    
+                    <label>Tipo de Evento:</label>
                     <select id="evento">
-                        <option value="Assembleia">Assembleia</option>
-                        <option value="Congresso">Congresso</option>
+                        <option value="Assembleia">Assembleia (1 dia)</option>
+                        <option value="Congresso">Congresso (3 dias)</option>
                     </select>
+
+                    <label>Ônibus:</label>
                     <select id="onibus">
                         <option value="1">Ônibus 01</option>
                         <option value="2">Ônibus 02</option>
                     </select>
-                    <button onclick="salvarPassageiro()" class="btn-save">Salvar</button>
+                    
+                    <button onclick="salvarPassageiro()" class="btn-save">Salvar Passageiro</button>
                 </div>
             </div>
 
             <div id="aba-relatorio" class="aba">
-                <h3>Lista de Passageiros</h3>
-                <button onclick="carregarLista()" class="btn-refresh">Atualizar Lista</button>
+                <div class="card no-print">
+                    <h3>🔍 Filtrar Relatório</h3>
+                    
+                    <div class="filtros-box">
+                        <select id="buscaEvento">
+                            <option value="">Todos os Eventos</option>
+                            <option value="Assembleia">Assembleia</option>
+                            <option value="Congresso">Congresso</option>
+                        </select>
+
+                        <select id="buscaOnibus">
+                            <option value="">Todos os Ônibus</option>
+                            <option value="1">Ônibus 01</option>
+                            <option value="2">Ônibus 02</option>
+                        </select>
+
+                        <input type="date" id="buscaData" title="Data da Viagem">
+                    </div>
+
+                    <button onclick="carregarRelatorioFiltrado()" class="btn-search">🔎 Buscar</button>
+                    <button onclick="window.print()" class="btn-print">🖨️ Imprimir Lista</button>
+                </div>
+
+                <div id="cabecalho-impresso" class="only-print"></div>
+
                 <div id="listaRelatorio"></div>
+                
+                <div class="resumo-final">
+                    <p>Quantidade: <strong id="resumoQtd">0</strong></p>
+                    <p>Total Filtrado: <strong id="resumoValor">R$ 0.00</strong></p>
+                </div>
             </div>
 
             <div id="aba-config" class="aba">
@@ -72,8 +110,8 @@
                         <span>Tema Escuro</span>
                         <input type="checkbox" id="check-tema" onchange="alternarTema()">
                     </div>
-                    <br>
-                    <button onclick="fazerLogout()" style="background: red;">Sair</button>
+                    <hr>
+                    <button onclick="fazerLogout()" style="background: #d32f2f; margin-top: 10px;">Sair do Sistema</button>
                 </div>
             </div>
 
@@ -83,6 +121,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    
     <script src="app.js"></script>
 </body>
 </html>

@@ -1,8 +1,10 @@
- :root {
+ /* --- CORES E TEMA --- */
+:root {
     --bg: #f4f4f9;
     --card: #ffffff;
     --text: #333333;
     --nav: #2196F3;
+    --border: #cccccc;
 }
 
 [data-theme="dark"] {
@@ -10,22 +12,65 @@
     --card: #1e1e1e;
     --text: #e0e0e0;
     --nav: #333333;
+    --border: #444444;
 }
 
-body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; transition: 0.3s; }
-.navbar { background: var(--nav); padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; }
+body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; transition: 0.3s; padding-bottom: 50px; }
+
+/* --- LOGIN --- */
+.login-container { height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--nav); }
+.login-card { width: 90%; max-width: 350px; text-align: center; }
+
+/* --- NAVBAR --- */
+.navbar { background: var(--nav); padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
 .btn-nav { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 1.2rem; }
 .btn-nav.active { color: white; transform: scale(1.2); }
 
+/* --- GERAL --- */
 .container { max-width: 600px; margin: 20px auto; padding: 10px; }
 .card { background: var(--card); padding: 20px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
-.btn-save { background: #28a745; color: white; font-weight: bold; cursor: pointer; border: none; }
 
+input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 5px; border: 1px solid var(--border); box-sizing: border-box; background: var(--card); color: var(--text); }
+
+label { font-weight: bold; font-size: 0.9em; display: block; margin-top: 10px; }
+
+.btn-save { background: #28a745; color: white; font-weight: bold; border: none; cursor: pointer; }
+.financeiro h1 { color: #2196F3; margin: 10px 0; }
+
+/* --- ABAS --- */
 .aba { display: none; }
-.aba.ativa { display: block; animation: fadeIn 0.5s; }
+.aba.ativa { display: block; animation: fadeIn 0.4s; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.login-container { height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--nav); }
-.login-card { width: 90%; max-width: 350px; text-align: center; }
-.item-lista { border-bottom: 1px solid #ccc; padding: 10px 0; }
+/* --- RELATÓRIOS E FILTROS --- */
+.filtros-box { display: flex; gap: 5px; flex-wrap: wrap; }
+.filtros-box select, .filtros-box input { flex: 1; min-width: 100px; }
+.btn-search { background: #17a2b8; color: white; font-weight: bold; border: none; cursor: pointer; }
+.btn-print { background: #6c757d; color: white; font-weight: bold; border: none; cursor: pointer; margin-top: 10px; }
+
+.item-lista { border-bottom: 1px solid var(--border); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+.resumo-final { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 5px; text-align: right; margin-top: 20px; }
+
+/* --- IMPRESSÃO (O SEGREDO) --- */
+.only-print { display: none; }
+
+@media print {
+    /* Esconde menu, botões e filtros */
+    .navbar, .btn-nav, .no-print, .btn-save, .btn-search, .btn-print, .opcao-tema, button {
+        display: none !important;
+    }
+    
+    /* Ajusta fundo para papel branco */
+    body, .card, #app-screen {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        margin: 0 !important; padding: 0 !important;
+    }
+
+    /* Mostra cabeçalho de impressão */
+    .only-print { display: block; text-align: center; margin-bottom: 20px; font-size: 1.5em; font-weight: bold; }
+    
+    .item-lista { border-bottom: 1px solid #000; }
+    .resumo-final { border-top: 2px solid #000; background: none; }
+}
