@@ -55,14 +55,18 @@ function toggleSidebar() {
 function mostrarAba(id) {
     document.querySelectorAll('.aba').forEach(e => e.classList.remove('ativa'));
     
-    // Atualiza a sidebar
+    // Atualiza a sidebar e nav desktop
     document.querySelectorAll('.btn-sidebar').forEach(e => e.classList.remove('active'));
+    document.querySelectorAll('.btn-nav').forEach(e => e.classList.remove('active'));
     
     document.getElementById(id).classList.add('ativa');
     
-    // Encontra o botão certo na sidebar e ativa
-    const btns = document.querySelectorAll('.btn-sidebar');
-    btns.forEach(btn => { if(btn.getAttribute('onclick') === `mostrarAba('${id}')`) btn.classList.add('active'); });
+    // Encontra o botão certo na sidebar e na nav desktop e ativa
+    const btnsSidebar = document.querySelectorAll('.btn-sidebar');
+    btnsSidebar.forEach(btn => { if(btn.getAttribute('onclick') === `mostrarAba('${id}')`) btn.classList.add('active'); });
+
+    const btnsNav = document.querySelectorAll('.btn-nav');
+    btnsNav.forEach(btn => { if(btn.getAttribute('onclick') === `mostrarAba('${id}')`) btn.classList.add('active'); });
     
     // Fecha a sidebar se estiver aberta (UX Mobile)
     const sidebar = document.getElementById('mySidebar');
@@ -172,4 +176,19 @@ async function editarPassageiro(id) { const doc = await db.collection("viagens")
 async function excluirPassageiro(id) { if(confirm("Excluir viagem?")) { await db.collection("viagens").doc(id).delete(); carregarTudo(); } }
 function carregarTudo() { carregarResumoHome(); carregarRelatorioFiltrado(); carregarClientesBase(); }
 async function carregarRelatorioFiltrado() { const div = document.getElementById('listaRelatorio'); const fEv = document.getElementById('buscaEvento').value; const fBus = document.getElementById('buscaOnibus').value; const fSt = document.getElementById('buscaStatus').value; const fDt = document.getElementById('buscaData').value; div.innerHTML = "Carregando..."; const snap = await db.collection("viagens").orderBy("nome").get(); let html = ""; let qtd = 0, val = 0; let tit = "LISTA DE PASSAGEIROS"; if(fEv) tit += ` - ${fEv}`; if(fBus) tit += ` - ÔNIBUS ${fBus}`; if(fDt) tit += ` - ${fDt.split('-').reverse().join('/')}`; document.getElementById('cabecalho-impresso').innerText = tit; snap.forEach(doc => { const p = doc.data(); if (fEv && p.evento !== fEv) return; if (fBus && p.onibus !== fBus) return; if (fSt && (p.status || 'Pago') !== fSt) return; if (fDt && p.data !== fDt) return; qtd++; if(p.status === 'Pago' || !p.status) val += p.valor; html += montarItemHTML(doc.id, p, true); }); div.innerHTML = html || "<p>Nenhum registro.</p>"; document.getElementById('resumoQtd').innerText = qtd; document.getElementById('resumoValor').innerText = val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); atualizarVisualCpf(); }
-function montarItemHTML(id, p, comBotoes) { const stCls = (p.status === 'Pendente') ? 'pendente' : 'pago'; const stTxt = p.status || 'Pago'; const cpf = p.cpf ? `CPF: ${p.cpf}` : ''; const btns = comBotoes ? `<div class="acoes-item"><i class="material-icons icon-btn" onclick="editarPassageiro('${id}')" style="color:#ffa000">edit</i><i class="material-icons icon-btn" onclick="excluirPassageiro('${id}')" style="color:#d32f2f">delete</i></div>` : ''; return `<div class="item-lista"><div class="dados-passageiro"><span class="info-principal">${p.nome}</span><span class="cpf-lateral">${cpf}</span><br><span class="detalhes-viagem">${p.data.split('-').reverse().join('/')} | ${p.evento} | Ônibus ${p.onibus} <span class="tag ${stCls}">${stTxt}</span></span></div><div style="text-align:right" class="valor-visual"><strong>${p.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>${btns}</div></div>`; }
+
+// --- FUNÇÃO CORRIGIDA PARA CPF E BOTÃO VISUAL ---
+function montarItemHTML(id, p, comBotoes) { 
+    const stCls = (p.status === 'Pendente') ? 'pendente' : 'pago'; 
+    const stTxt = p.status || 'Pago'; 
+    
+    // Mostra o CPF com traço ou "(Sem CPF)" se estiver vazio
+    const cpfTexto = p.cpf ? ` - CPF: ${p.cpf}` : ' <span style="color:#ccc; font-size:0.8em;">(Sem CPF)</span>';
+    
+    // A classe 'cpf-lateral' permite que o CSS esconda tudo isso quando a checkbox é desmarcada
+    const htmlCpf = `<span class="cpf-lateral">${cpfTexto}</span>`;
+
+    const btns = comBotoes ? `<div class="acoes-item"><i class="material-icons icon-btn" onclick="editarPassageiro('${id}')" style="color:#ffa000">edit</i><i class="material-icons icon-btn" onclick="excluirPassageiro('${id}')" style="color:#d32f2f">delete</i></div>` : ''; 
+    
+    return `<div class="item-lista"><div class="dados-passageiro"><span class="info-principal">${p.nome}</span>${htmlCpf}<br><span class="detalhes-viagem">${p.data.split('-').reverse().join('/')} | ${p.evento} | Ônibus ${p.onibus} <span class="tag ${stCls}">${stTxt}</span></span></div><div style="text-align:right" class="valor-visual"><strong>${p.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>${btns}</div></div>`; 
+}
