@@ -28,7 +28,15 @@
             
             <div class="menu-icons">
                 <button onclick="alternarTema()" class="btn-nav" title="Mudar Tema"><i class="material-icons" id="icon-tema">dark_mode</i></button>
-                <button onclick="fazerLogout()" class="btn-nav" style="color:#ff8a80"><i class="material-icons">logout</i></button>
+
+                <div class="desktop-nav">
+                    <button onclick="mostrarAba('aba-home')" class="btn-nav active" title="Dashboard"><i class="material-icons">dashboard</i></button>
+                    <button onclick="mostrarAba('aba-despesas')" class="btn-nav" title="Despesas"><i class="material-icons">payments</i></button>
+                    <button onclick="mostrarAba('aba-clientes')" class="btn-nav" title="Clientes"><i class="material-icons">people</i></button>
+                    <button onclick="mostrarAba('aba-relatorio')" class="btn-nav" title="Relatórios"><i class="material-icons">list_alt</i></button>
+                </div>
+
+                <button onclick="fazerLogout()" class="btn-nav" style="color:#ff8a80" title="Sair"><i class="material-icons">logout</i></button>
             </div>
         </nav>
 

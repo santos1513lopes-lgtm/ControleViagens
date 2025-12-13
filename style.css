@@ -6,81 +6,41 @@ body { background: var(--bg); color: var(--text); font-family: sans-serif; margi
 /* NAVBAR */
 .navbar { background: var(--nav); height: 60px; width: 100%; padding: 0 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); box-sizing: border-box; }
 .logo { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-.btn-menu-toggle { cursor: pointer; font-size: 1.5rem; margin-right: 10px; display: none; /* Só aparece no mobile */ }
 
 /* MENU ICONS */
 .menu-icons { display: flex; align-items: center; gap: 15px; }
 .btn-nav { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.5rem; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
 .btn-nav:hover { color: white; }
+.btn-nav.active { color: white; border-bottom: 2px solid white; }
 
-/* --- SIDEBAR (NOVO) --- */
+/* NAV DESKTOP (Aparece no PC) */
+.desktop-nav { display: flex; gap: 10px; }
+
+/* MENU HAMBÚRGUER (Escondido no PC) */
+.btn-menu-toggle { cursor: pointer; font-size: 1.5rem; margin-right: 10px; display: none; }
+
+/* --- REGRAS MOBILE (Quando a tela é pequena) --- */
+@media (max-width: 768px) {
+    .btn-menu-toggle { display: block; } /* Mostra o hambúrguer */
+    .desktop-nav { display: none; } /* Esconde os botões do topo */
+    .menu-icons { gap: 10px; }
+    .fab { bottom: 20px; right: 20px; }
+}
+
+/* SIDEBAR (MENU LATERAL) */
 .sidebar {
-    height: 100%;
-    width: 250px;
-    position: fixed;
-    z-index: 2500;
-    top: 0;
-    left: -260px; /* Escondida */
-    background-color: var(--sidebar-bg);
-    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
-    transition: 0.3s;
-    overflow-x: hidden;
-    padding-top: 20px;
-    display: flex;
-    flex-direction: column;
+    height: 100%; width: 250px; position: fixed; z-index: 2500; top: 0; left: -260px;
+    background-color: var(--sidebar-bg); box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+    transition: 0.3s; overflow-x: hidden; padding-top: 20px; display: flex; flex-direction: column;
 }
 .sidebar.open { left: 0; }
 
-.sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px 20px 20px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 10px;
-}
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+.btn-sidebar { padding: 15px 25px; text-decoration: none; font-size: 1.1rem; color: var(--text); display: flex; align-items: center; gap: 15px; background: none; border: none; width: 100%; text-align: left; cursor: pointer; transition: 0.2s; }
+.btn-sidebar:hover, .btn-sidebar.active { background-color: rgba(33, 150, 243, 0.1); color: #2196F3; font-weight: bold; }
 
-.btn-sidebar {
-    padding: 15px 25px;
-    text-decoration: none;
-    font-size: 1.1rem;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: none;
-    border: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.btn-sidebar:hover, .btn-sidebar.active {
-    background-color: rgba(33, 150, 243, 0.1);
-    color: #2196F3;
-    font-weight: bold;
-}
-
-.sidebar-overlay {
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 2400;
-}
+.sidebar-overlay { display: none; position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-color: rgba(0,0,0,0.5); z-index: 2400; }
 .sidebar-overlay.show { display: block; }
-
-/* RESPONSIVIDADE (MOBILE) */
-@media (max-width: 768px) {
-    .btn-menu-toggle { display: block; } /* Mostra o menu hambúrguer */
-    .menu-icons { gap: 10px; }
-    /* Esconde os botões de navegação da barra superior no mobile (se houver algum) */
-    .nav-group { display: none; } 
-    .fab { bottom: 20px; right: 20px; } /* FAB volta para o lugar original */
-}
 
 /* LOGIN */
 .login-container { height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--nav); position: fixed; top: 0; left: 0; width: 100%; z-index: 2000; }
