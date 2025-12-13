@@ -23,12 +23,14 @@
             <span class="logo">GestãoBus</span>
             <div class="menu-icons">
                 <button onclick="mostrarAba('aba-home')" class="btn-nav active"><i class="material-icons">home</i></button>
+                <button onclick="mostrarAba('aba-clientes')" class="btn-nav"><i class="material-icons">people</i></button>
                 <button onclick="mostrarAba('aba-relatorio')" class="btn-nav"><i class="material-icons">list_alt</i></button>
                 <button onclick="mostrarAba('aba-config')" class="btn-nav"><i class="material-icons">settings</i></button>
             </div>
         </nav>
 
         <div class="container">
+            
             <div id="aba-home" class="aba ativa">
                 <div class="card financeiro">
                     <h3>💰 Caixa Atual</h3>
@@ -41,6 +43,29 @@
                 </div>
             </div>
 
+            <div id="aba-clientes" class="aba">
+                <div class="card">
+                    <h3>👥 Gestão de Clientes</h3>
+                    <input type="hidden" id="id-cliente-editar">
+                    
+                    <div class="row">
+                        <input type="text" id="novoNomeCliente" placeholder="Nome do Cliente">
+                        <input type="text" id="novoCpfCliente" placeholder="CPF">
+                    </div>
+                    <input type="tel" id="novoTelCliente" placeholder="Telefone (Opcional)">
+                    
+                    <div class="row">
+                        <button onclick="salvarClienteBase()" class="btn-save" id="btn-salvar-cliente" style="background:#007bff">Cadastrar Novo</button>
+                        <button onclick="cancelarEdicaoCliente()" class="btn-cancel" id="btn-cancelar-cliente" style="display:none;">Cancelar Edição</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Lista de Clientes</h3>
+                    <div id="listaClientesBase">Carregando...</div>
+                </div>
+            </div>
+
             <div id="aba-relatorio" class="aba">
                 <div class="card no-print">
                     <h3>🔍 Filtros</h3>
@@ -50,17 +75,14 @@
                     </div>
                     <div class="filtros-box">
                         <select id="buscaStatus"><option value="">Todos Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option></select>
-                        <input type="date" id="buscaData" title="Filtrar por Data">
+                        <input type="date" id="buscaData">
                     </div>
-                    
                     <button onclick="carregarRelatorioFiltrado()" class="btn-search">Filtrar</button>
                     <button onclick="window.print()" class="btn-print">Imprimir Lista</button>
                 </div>
 
                 <div id="cabecalho-impresso" class="only-print"></div>
-
                 <div id="listaRelatorio"></div>
-                
                 <div class="resumo-final">
                     <p>Qtd: <strong id="resumoQtd">0</strong> | Total: <strong id="resumoValor">R$ 0.00</strong></p>
                 </div>
@@ -86,8 +108,19 @@
                 <h3 id="titulo-modal">Novo Passageiro</h3>
                 <input type="hidden" id="id-passageiro">
                 
-                <input type="text" id="nome" placeholder="Nome Completo">
+                <input type="text" id="nome" list="lista-sugestoes" placeholder="Nome (Comece a digitar...)" oninput="verificarCliente()" autocomplete="off">
+                <datalist id="lista-sugestoes"></datalist>
+
+                <div id="aviso-cliente" class="aviso-neutro">Digite o nome para verificar</div>
+
                 <input type="text" id="cpf" placeholder="CPF">
+
+                <div id="opcao-salvar-cliente" style="display:none; margin-bottom: 10px; background: #e3f2fd; padding: 10px; border-radius: 5px;">
+                    <label style="display:flex; align-items:center; gap:10px; margin:0; cursor:pointer; color:#0d47a1;">
+                        <input type="checkbox" id="check-salvar-cliente" style="width:20px; height:20px; margin:0;">
+                        Salvar na lista de clientes fixos?
+                    </label>
+                </div>
                 
                 <div class="row">
                     <input type="number" id="valor" placeholder="Valor (R$)">
@@ -102,7 +135,7 @@
 
                 <div class="modal-actions">
                     <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
-                    <button onclick="salvarPassageiro()" class="btn-save">Salvar</button>
+                    <button onclick="salvarPassageiro()" class="btn-save">Confirmar</button>
                 </div>
             </div>
         </div>
