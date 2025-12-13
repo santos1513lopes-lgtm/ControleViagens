@@ -24,7 +24,7 @@ body { background: var(--bg); color: var(--text); font-family: sans-serif; margi
 input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 5px; border: 1px solid var(--border); box-sizing: border-box; background: var(--card); color: var(--text); }
 .row { display: flex; gap: 10px; }
 
-/* BOTÕES ESPECIAIS */
+/* BOTÕES */
 .btn-save { background: #28a745; color: white; border: none; font-weight: bold; }
 .btn-cancel { background: #6c757d; color: white; border: none; }
 .btn-search { background: #17a2b8; color: white; font-weight: bold; border: none; }
@@ -50,7 +50,6 @@ input, select, button { width: 100%; padding: 12px; margin: 5px 0; border-radius
 .pago { background: #28a745; }
 .pendente { background: #dc3545; }
 
-/* REGRA PARA ESCONDER CPF (IMPORTANTE) */
 .ocultar-cpf .cpf-lateral { display: none !important; }
 
 .only-print { display: none; }

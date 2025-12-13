@@ -69,8 +69,18 @@
                 <div class="card no-print">
                     <h3>🔍 Filtros e Exportação</h3>
                     <div class="filtros-box">
-                        <select id="buscaEvento"><option value="">Todos Eventos</option><option value="Assembleia">Assembleia</option><option value="Congresso">Congresso</option></select>
-                        <select id="buscaOnibus"><option value="">Todos Ônibus</option><option value="1">Ônibus 01</option><option value="2">Ônibus 02</option></select>
+                        <select id="buscaEvento">
+                            <option value="">Todos Eventos</option>
+                            <option value="Assembleia">Assembleia</option>
+                            <option value="Congresso">Congresso</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                        <select id="buscaOnibus">
+                            <option value="">Todos Ônibus</option>
+                            <option value="1">Ônibus 01</option>
+                            <option value="2">Ônibus 02</option>
+                            <option value="3">Ônibus 03</option>
+                        </select>
                     </div>
                     <div class="filtros-box">
                         <select id="buscaStatus"><option value="">Todos Status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option></select>
@@ -81,10 +91,10 @@
                     
                     <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
                     
-                    <div style="margin-bottom: 10px;">
+                    <div style="margin-bottom: 10px; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 5px;">
                         <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:bold; color:var(--text);">
                             <input type="checkbox" id="check-mostrar-cpf" checked onchange="atualizarVisualCpf()" style="width:18px; height:18px;"> 
-                            Mostrar CPF nos relatórios?
+                            Incluir CPF na lista/relatórios
                         </label>
                     </div>
 
@@ -112,25 +122,39 @@
             <div class="modal-content">
                 <h3 id="titulo-modal">Novo Passageiro</h3>
                 <input type="hidden" id="id-passageiro">
+                
                 <input type="text" id="nome" list="lista-sugestoes" placeholder="Nome (Comece a digitar...)" oninput="verificarCliente()" autocomplete="off">
                 <datalist id="lista-sugestoes"></datalist>
                 <div id="aviso-cliente" class="aviso-neutro">Digite o nome para verificar</div>
+                
                 <input type="text" id="cpf" placeholder="CPF">
+                
                 <div id="opcao-salvar-cliente" style="display:none; margin-bottom: 10px; background: #e3f2fd; padding: 10px; border-radius: 5px;">
                     <label style="display:flex; align-items:center; gap:10px; margin:0; cursor:pointer; color:#0d47a1;">
                         <input type="checkbox" id="check-salvar-cliente" style="width:20px; height:20px; margin:0;"> Salvar na lista de clientes?
                     </label>
                 </div>
+                
                 <div class="row">
-                    <input type="number" id="valor" placeholder="Valor (R$)">
+                    <input type="tel" id="valor" placeholder="Valor (R$ 0,00)" oninput="formatarMoeda(this)">
                     <select id="status"><option value="Pago">✅ Pago</option><option value="Pendente">⚠️ Pendente</option></select>
                 </div>
+                
                 <label>Detalhes da Viagem:</label>
                 <div class="row">
                     <input type="date" id="data">
-                    <select id="onibus"><option value="1">Bus 01</option><option value="2">Bus 02</option></select>
+                    <select id="onibus">
+                        <option value="1">Bus 01</option>
+                        <option value="2">Bus 02</option>
+                        <option value="3">Bus 03</option>
+                    </select>
                 </div>
-                <select id="evento"><option value="Assembleia">Assembleia</option><option value="Congresso">Congresso</option></select>
+                <select id="evento">
+                    <option value="Assembleia">Assembleia</option>
+                    <option value="Congresso">Congresso</option>
+                    <option value="Outros">Outros</option>
+                </select>
+                
                 <div class="modal-actions">
                     <button onclick="fecharModal()" class="btn-cancel">Cancelar</button>
                     <button onclick="salvarPassageiro()" class="btn-save">Confirmar</button>
